@@ -32,3 +32,6 @@ Le modèle est **trop volumineux** pour cette carte :
 - RAM nécessaire : 148,56 KiB (la limite est 192 KiB), laissant très peu de marge pour l’exécution.  
 
 Donc ce modèle ne peut pas être embarqué sur cette carte.
+
+## 4. Solution 1 : embarquement sur carte cible
+Une fois l’analyse validée, nous avons généré le code, puis modifié le fichier app_cubeai.c pour spécifier la taille des données CIFAR-10, définir le timeout à 0xFFFF et indiquer le nombre de classes à 10.
