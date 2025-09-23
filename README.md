@@ -24,8 +24,11 @@ Avant de déployer le modèle sur une carte électronique, il faut vérifier :
 ---
 
 ## 3. Compatibilité avec la carte cible
-<img src="https://github.com/user-attachments/assets/08788b30-3d5f-4a35-aa47-5e3cd9856ebc" width="400"/>
+Pour embarquer notre modèle sur la carte, nous avons créé un projet avec CubeMX et déployé le modèle ainsi que la base de données de test. Dans un premier temps, le modèle étant trop volumineux pour la carte, l’analyse initiale a échoué.
 
+<p align="center">
+<img src="https://github.com/user-attachments/assets/08788b30-3d5f-4a35-aa47-5e3cd9856ebc" width="400"/>
+</p>
 
 Le modèle est **trop volumineux** pour cette carte :  
 - Flash nécessaire : 5,14 MiB (la carte n’offre que 2 MiB).  
@@ -33,5 +36,16 @@ Le modèle est **trop volumineux** pour cette carte :
 
 Donc ce modèle ne peut pas être embarqué sur cette carte.
 
-## 4. Solution 1 : embarquement sur carte cible
-Une fois l’analyse validée, nous avons généré le code, puis modifié le fichier app_cubeai.c pour spécifier la taille des données CIFAR-10, définir le timeout à 0xFFFF et indiquer le nombre de classes à 10.
+## 4. Approches pour intégrer le modèle sur STM32
+### Solution 1 : 
+Nous avons d’abord effectué la compression MEDIUM du modèle afin de réduire sa taille et son usage mémoire, ce qui permet de l’exécuter sur la carte malgré ses limitations. Une fois l’analyse validée, nous avons généré le code, puis modifié le fichier app_cubeai.c pour spécifier la taille des données CIFAR-10 (32 * 32 *3 *4), définir le timeout à 0xFFFF et indiquer le nombre de classes à 10.
+
+<p align="center">
+<img width="428" height="72" alt="analyse apres compression" src="https://github.com/user-attachments/assets/e00eae21-92a5-4246-8adb-79c89f8200a0" />
+</p>
+
+Grâce à cette approche, nous avons réussi à embarquer le modèle tout en conservant une très bonne précision
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b331f3b7-3c03-40e7-b52b-2bda7d7df26c" width="500"/>
+</p>
