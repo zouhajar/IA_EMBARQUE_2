@@ -73,6 +73,14 @@ Contrairement à des architectures plus lourdes comme **VGG** ou **ResNet**, qui
 | 11 | Dense (Softmax) | Classification finale | 10 classes |
 
 </p>
+Après l’entraînement du modèle, nous avons évalué ses performances sur le jeu de test CIFAR-10.
+La précision atteinte est affichée, et nous avons généré la matrice de confusion pour visualiser la qualité des prédictions sur chaque classe.
+
+
+<p align="center">
+<img src="https://github.com/user-attachments/assets/3d8d0d9b-b081-4d09-a13a-9d27049548a0"  width="400"/>
+</p>
+
 
 Après avoir généré les fichiers de test (`xtest`, `ytest`) et le modèle au format `.h5`, nous avons réussi à **déployer le modèle sur la carte STM32 sans difficulté**.
 L’inférence embarquée a permis d’atteindre une **précision de 85 %** sur le jeu de test.
