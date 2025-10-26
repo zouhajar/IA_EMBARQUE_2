@@ -94,5 +94,19 @@ L’inférence embarquée a permis d’atteindre une **précision de 85 %** sur 
   <img src="https://github.com/user-attachments/assets/22862d68-6983-4606-8bd8-642f9fe6c76c" width="500"/>
 </p>
 
+# Sécurité — Robustesse face à l’attaque Bit-Flip (BFA)
+
+Dans cette étude, nous avons évalué la robustesse du modèle TinyVGG quantifié sur 8 bits entraîné sur CIFAR-10 face à l’attaque Bit-Flip (BFA).
+Deux configurations ont été testées :
+
+**Modèle nominal** : lr = 0.01, clipping_value = 0.0, randbet = 0  
+**Modèle protégé** : lr = 0.01, clipping_value = 0.1, randbet = 1
+
+Après application progressive des bit-flips, le modèle protégé montre une meilleure résistance : la dégradation de l’accuracy est plus lente que pour le modèle nominal.
+Ces résultats confirment que le clipping des poids et l’entraînement robuste RandBET renforcent la sécurité du réseau face aux corruptions de poids.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/670178f9-0dd3-4fc1-9ad8-e176f94a0c4c" alt="Résultats BFA TinyVGG" width="500"/>
+</p>
 
 
