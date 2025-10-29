@@ -53,6 +53,12 @@ Grâce à cette approche, nous avons réussi à embarquer le modèle tout en con
 ### Solution 2 : 
 
 Afin de surmonter les contraintes mémoire du STM32 (2 Mo de Flash et 192 KiB de RAM), nous avons opté pour **MobileNet**, un modèle spécifiquement conçu pour les environnements à ressources limitées.
+Compromis précision vs taille mémoire
+
+Lors de nos expérimentations, nous avons pu atteindre une précision maximale d’environ 88 % sur CIFAR‑10 avec le modèle complet. Cependant, le modèle dépassait de très peu la limite de mémoire de la carte STM32 (~20 Ko au-dessus), ce qui le rendait impossible à embarquer.
+
+Après plusieurs tentatives d’optimisation, nous avons choisi un MobileNet ultra-compact qui respecte les contraintes mémoire et permet une précision embarquée d’environ 85 %, constituant le meilleur compromis entre taille et performance pour ce microcontrôleur.
+
 Ce choix s’explique par la volonté de disposer d’un réseau **à la fois compact et performant**, capable de s’exécuter efficacement sur un microcontrôleur.
 Contrairement à des architectures plus lourdes comme **VGG** ou **ResNet**, qui comportent plusieurs dizaines de millions de paramètres, **MobileNet** offre une structure optimisée permettant de réduire considérablement la taille du modèle tout en conservant une bonne précision.
 
@@ -93,6 +99,8 @@ L’inférence embarquée a permis d’atteindre une **précision de 85 %** sur 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/22862d68-6983-4606-8bd8-642f9fe6c76c" width="500"/>
 </p>
+
+
 
 # Sécurité — Robustesse face à l’attaque Bit-Flip (BFA)
 
