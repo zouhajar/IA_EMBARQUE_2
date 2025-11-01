@@ -2,8 +2,7 @@
 # Projet : IA Embarquée sur STM32
 
 **Auteurs :** Yassmina Bara, Hajar Zouggari
-
-> **Note pour le lecteur :**  
+ 
 > Le projet est organisé en plusieurs branches Git pour faciliter l’accès aux différentes parties :  
 > - `Model` : scripts d’entraînement et d’évaluation des modèles d’IA.  
 > - `CubeIde` : projet CubeIDE pour l’embarquement sur STM32.   
