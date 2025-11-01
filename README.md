@@ -125,10 +125,11 @@ Même une inversion de bit peut provoquer une **dégradation importante des perf
 ---
 
 ## Évaluation sur TinyVGG
+Pour le modèle **TinyVGG quantifié sur 8 bits**, entraîné sur **CIFAR-10**, nous avons évalué la robustesse face à l’attaque **Bit-Flip (BFA)**.  
+Pour cette évaluation, nous avons suivi le tutoriel fourni par le professeur : [Tutorial Adversarial Weight Attack](https://gitlab.emse.fr/securityml/tutorial-adversarial-weight-attack).  
 
-Pour le modèle **TinyVGG quantifié sur 8 bits**, entraîné sur **CIFAR-10**, nous avons évalué la robustesse face à l’attaque BFA.  
-Deux configurations ont été testées (train+attaque) :  
-
+Deux configurations ont été testées (entraînement + attaque) :
+ 
 - **Modèle nominal** : `lr = 0.01`, `clipping_value = 0.0`, `randbet = 0`  
 - **Modèle protégé** : `lr = 0.01`, `clipping_value = 0.1`, `randbet = 1`
 
