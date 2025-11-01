@@ -1,4 +1,14 @@
-# IA_EMBARQUE
+
+# Projet : IA Embarquée sur STM32
+
+**Auteurs :** Yassmina Bara, Hajar Zouggari
+
+> **Note pour le lecteur :**  
+> Le projet est organisé en plusieurs branches Git pour faciliter l’accès aux différentes parties :  
+> - `Model` : scripts d’entraînement et d’évaluation des modèles d’IA.  
+> - `CubeIde` : projet CubeIDE pour l’embarquement sur STM32.   
+> - `Sécurité` : expérimentations sur la robustesse face aux attaques Bit‑Flip et mécanismes de protection.  
+
 
 ## Introduction
 
@@ -117,7 +127,6 @@ Même une inversion de bit peut provoquer une **dégradation importante des perf
 ## Évaluation sur TinyVGG
 
 Pour le modèle **TinyVGG quantifié sur 8 bits**, entraîné sur **CIFAR-10**, nous avons évalué la robustesse face à l’attaque BFA.  
-
 Deux configurations ont été testées (train+attaque) :  
 
 - **Modèle nominal** : `lr = 0.01`, `clipping_value = 0.0`, `randbet = 0`  
@@ -132,7 +141,6 @@ Après application progressive des bit-flips :
 </p>
 
 ---
-
 ## Évaluation sur MobileNet
 
 Pour notre modèle **MobileNet** structuré en blocs modulaires :  
@@ -149,10 +157,10 @@ Pour notre modèle **MobileNet** structuré en blocs modulaires :
 Après avoir lancé l’entraînement avec `train_mobilenet.py` et effectué la phase de maintenance :
 
 - Pour chaque configuration du modèle, nous avons appliqué l’attaque **Bit‑Flip (BFA)** à l’aide du script `bfa_mobilenet.py`.  
-- L’attaque a été répétée **sur 5 seeds différentes** afin d’évaluer la variabilité due à l’initialisation et obtenir des résultats statistiquement solides.  
+- L’attaque a été répétée **sur 5 seeds différentes** ['5555', '758', '3666', '4258', '6213'] afin d’évaluer la variabilité due à l’initialisation et obtenir des résultats statistiquement solides.
+  
 - À chaque exécution (configuration × seed), un fichier **CSV** a été généré contenant l’évolution de l’accuracy en fonction du nombre de bit‑flips (et autres métriques pertinentes).
 
 - Une fois toutes les exécutions terminées, les CSV sont agrégés et analysés avec `printing_tools.py` afin de tracer les **courbes accuracy vs nombre de bit‑flips** permettant de comparer la robustesse des configurations testées.
 
  
-
