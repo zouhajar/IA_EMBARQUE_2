@@ -1,5 +1,10 @@
 # IA_EMBARQUE
 
+## Introduction
+
+Ce projet a pour objectif de **développer, optimiser et embarquer un modèle d’intelligence artificielle sur microcontrôleur STM32**.  
+L’enjeu principal consiste à **adapter un réseau de neurones conçu pour un environnement de calcul classique (GPU/CPU)** afin qu’il puisse s’exécuter efficacement sur une **plateforme embarquée à ressources limitées** (mémoire, puissance de calcul, consommation énergétique).
+
 ## 1. Architecture du modèle
 
 Le modèle est construit avec plusieurs types de couches pour analyser efficacement les images :  
@@ -104,22 +109,23 @@ L’inférence embarquée a permis d’atteindre une **précision de 85 %** sur 
 
 ## Qu’est-ce qu’une attaque Bit-Flip (BFA) ?
 
-L’**attaque Bit-Flip (BFA)** est une technique d’attaque matérielle visant à **altérer les poids d’un réseau de neurones** en modifiant directement certains bits dans la mémoire (généralement la DRAM ou la Flash).  
-Une simple inversion de bit dans la représentation binaire d’un poids peut provoquer une **dégradation significative des performances du modèle**, voire l’amener à produire des prédictions erronées de manière systématique.
-
+L’**attaque Bit-Flip (BFA)** est une technique d’attaque matérielle visant à **altérer les poids d’un réseau de neurones** en modifiant directement certains bits dans la mémoire (généralement DRAM ou Flash).  
+Même une inversion de bit peut provoquer une **dégradation importante des performances**, voire amener le modèle à produire des prédictions totalement erronées.
 
 ---
 
 ## Évaluation sur TinyVGG
 
-Dans cette étude, nous avons évalué la robustesse du modèle **TinyVGG quantifié sur 8 bits** entraîné sur **CIFAR-10** face à l’attaque Bit-Flip (BFA).  
-Deux configurations ont été testées :
+Pour le modèle **TinyVGG quantifié sur 8 bits**, entraîné sur **CIFAR-10**, nous avons évalué la robustesse face à l’attaque BFA.  
+
+Deux configurations ont été testées (train+attaque) :  
 
 - **Modèle nominal** : `lr = 0.01`, `clipping_value = 0.0`, `randbet = 0`  
 - **Modèle protégé** : `lr = 0.01`, `clipping_value = 0.1`, `randbet = 1`
 
-Après application progressive des bit-flips, le **modèle protégé** montre une meilleure résistance : la dégradation de l’accuracy est plus lente que pour le modèle nominal.  
-Ces résultats confirment que le **clipping des poids** et l’entraînement robuste **RandBET** renforcent la sécurité du réseau face aux corruptions de poids.
+Après application progressive des bit-flips :  
+- Le **modèle protégé** conserve une précision plus stable que le modèle nominal.  
+- Les résultats confirment que le **clipping des poids** et l’utilisation de **RandBET** augmentent la robustesse face aux corruptions de poids.
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/670178f9-0dd3-4fc1-9ad8-e176f94a0c4c" alt="Résultats BFA TinyVGG" width="500"/>
@@ -127,21 +133,26 @@ Ces résultats confirment que le **clipping des poids** et l’entraînement rob
 
 ---
 
-## Expérimentation avec MobileNet quantifié et évaluation de robustesse
+## Évaluation sur MobileNet
 
-Dans notre cas, on a travaillé sur un modèle **MobileNet** structuré en blocs modulaires.  
-Nous avons d’abord **traduit en détail l’architecture** du modèle dans le fichier `mobilenet_quan.py`, puis procédé à l’entraînement selon **quatre configurations distinctes** :
+Pour notre modèle **MobileNet** structuré en blocs modulaires :  
+1. L’architecture a été **transcrite dans `mobilenet_quan.py`**.  
+2. L’entraînement a été réalisé selon **quatre configurations** :
 
 | **Configuration** | **Learning rate (lr)** | **Clipping value** | **RandBET** | **Description** |
 |:--|:--:|:--:|:--:|:--|
 | Modèle nominal | 0.1 | 0.0 | 0 | Référence de base |
-| Modèle à faible taux d’apprentissage | 0.01 | 0.0 | 0 | Réduction de la vitesse d’apprentissage |
-| Modèle protégé (clipping) | 0.1 | 0.1 | 0 | Protection via limitation des poids |
-| Modèle protégé (clipping + RandBET) | 0.1 | 0.1 | 1 | Protection combinée renforcée |
+| Faible learning rate | 0.01 | 0.0 | 0 | Réduction de la vitesse d’apprentissage |
+| Clipping | 0.1 | 0.1 | 0 | Limitation des poids |
+| Clipping + RandBET | 0.1 | 0.1 | 1 | Protection combinée renforcée |
 
-Une fois l’entraînement terminé et la phase de maintenance effectuée, nous avons procédé à **l’attaque Bit-Flip (BFA)** à l’aide du script `bfa_mobilenet.py`.  
-Lors de cette étape, le modèle à attaquer est spécifié, puis l’attaque est lancée afin d’évaluer la résistance de chaque configuration.  
+Après avoir lancé l’entraînement avec `train_mobilenet.py` et effectué la phase de maintenance :
 
-À la fin de chaque expérimentation, des fichiers **CSV** sont générés pour consigner les résultats de toutes les attaques. Ces données sont ensuite **exploitées pour tracer les courbes d’évolution de la précision** en fonction du nombre de bit-flips, permettant d’illustrer la robustesse des différents modèles face aux corruptions de poids.
+- Pour chaque configuration du modèle, nous avons appliqué l’attaque **Bit‑Flip (BFA)** à l’aide du script `bfa_mobilenet.py`.  
+- L’attaque a été répétée **sur 5 seeds différentes** afin d’évaluer la variabilité due à l’initialisation et obtenir des résultats statistiquement solides.  
+- À chaque exécution (configuration × seed), un fichier **CSV** a été généré contenant l’évolution de l’accuracy en fonction du nombre de bit‑flips (et autres métriques pertinentes).
+
+- Une fois toutes les exécutions terminées, les CSV sont agrégés et analysés avec `printing_tools.py` afin de tracer les **courbes accuracy vs nombre de bit‑flips** permettant de comparer la robustesse des configurations testées.
+
  
 
