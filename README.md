@@ -17,7 +17,7 @@ L’enjeu principal consiste à **adapter un réseau de neurones conçu pour un 
 
 ## 1. Architecture du modèle
 
-Le modèle est construit avec plusieurs types de couches pour analyser efficacement les images :  
+Le modèle fourni est construit avec plusieurs types de couches pour analyser efficacement les images :  
 - **Convolutions 3×3** : héritées de VGG, elles extraient les motifs et textures.  
 - **ReLU** : activation rapide qui évite que le modèle perde l’information (vanishing gradient).  
 - **BatchNormalization** : stabilise et accélère l’entraînement.  
@@ -39,27 +39,27 @@ Avant de déployer le modèle sur une carte électronique, il faut vérifier :
 ---
 
 ## 3. Compatibilité avec la carte cible
-Pour embarquer notre modèle sur la carte, nous avons créé un projet avec CubeMX et déployé le modèle ainsi que la base de données de test. Dans un premier temps, le modèle étant trop volumineux pour la carte, l’analyse initiale a échoué.
+Pour embarquer notre modèle sur la carte, nous avons créé un projet avec CubeMX et déployé le modèle ainsi que la base de données de test. Dans un premier temps, le modèle étant **trop volumineux** pour la carte, l’analyse initiale a échoué.
 
+- Flash nécessaire : 5,14 MiB (la carte n’offre que 2 MiB).  
+- RAM nécessaire : 148,56 KiB (la limite est 192 KiB), laissant très peu de marge pour l’exécution.
+  
 <p align="center">
 <img src="https://github.com/user-attachments/assets/08788b30-3d5f-4a35-aa47-5e3cd9856ebc" width="400"/>
 </p>
 
-Le modèle est **trop volumineux** pour cette carte :  
-- Flash nécessaire : 5,14 MiB (la carte n’offre que 2 MiB).  
-- RAM nécessaire : 148,56 KiB (la limite est 192 KiB), laissant très peu de marge pour l’exécution.  
 
 Donc ce modèle ne peut pas être embarqué sur cette carte.
 
 ## 4. Approches pour intégrer le modèle sur STM32
 ### Solution 1 : 
-Nous avons d’abord effectué la compression MEDIUM du modèle afin de réduire sa taille et son usage mémoire, ce qui permet de l’exécuter sur la carte malgré ses limitations. Une fois l’analyse validée, nous avons généré le code, puis modifié le fichier app_cubeai.c pour spécifier la taille des données CIFAR-10 (32 * 32 *3 *4), définir le timeout à 0xFFFF et indiquer le nombre de classes à 10.
+Nous avons d’abord effectué la compression **MEDIUM** du modèle afin de réduire sa taille et son usage mémoire, ce qui permet de l’exécuter sur la carte malgré ses limitations. Une fois l’analyse validée (figure ci dessous), nous avons généré le code, puis modifié le fichier **app_cubeai.c** pour spécifier la taille des données CIFAR-10 (32 * 32 *3 *4), définir le timeout à 0xFFFF et indiquer le nombre de classes à 10.
 
 <p align="center">
 <img width="428" height="72" alt="analyse apres compression" src="https://github.com/user-attachments/assets/e00eae21-92a5-4246-8adb-79c89f8200a0" />
 </p>
 
-Grâce à cette approche, nous avons réussi à embarquer le modèle tout en conservant une très bonne précision
+Grâce à cette approche, nous avons réussi à embarquer le modèle tout en conservant une très bonne précision (accuracy = 87%)
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/b331f3b7-3c03-40e7-b52b-2bda7d7df26c" width="500"/>
@@ -70,10 +70,9 @@ Grâce à cette approche, nous avons réussi à embarquer le modèle tout en con
 Afin de surmonter les contraintes mémoire du STM32 (2 Mo de Flash et 192 KiB de RAM), nous avons opté pour **MobileNet**, un modèle spécifiquement conçu pour les environnements à ressources limitées.
 Compromis précision vs taille mémoire
 
-Lors de nos expérimentations, nous avons pu atteindre une précision maximale d’environ 88 % sur CIFAR‑10 avec le modèle complet. Cependant, le modèle dépassait de très peu la limite de mémoire de la carte STM32 (~20 Ko au-dessus), ce qui le rendait impossible à embarquer.
+Lors de nos expérimentations, nous avons pu atteindre une précision maximale d’environ 88 % sur CIFAR‑10 avec le modèle complet. Cependant, le modèle dépassait de **très peu** la limite de mémoire de la carte STM32 (~20 Ko au-dessus), ce qui le rendait impossible à embarquer.
 
-Après plusieurs tentatives d’optimisation, nous avons choisi un MobileNet ultra-compact qui respecte les contraintes mémoire et permet une précision embarquée d’environ 85 %, constituant le meilleur compromis entre taille et performance pour ce microcontrôleur.
-
+Après plusieurs tentatives d’optimisation, nous avons choisi un MobileNet ultra-compact qui respecte les contraintes mémoire et permet une précision embarquée d’environ 85 %.
 Ce choix s’explique par la volonté de disposer d’un réseau **à la fois compact et performant**, capable de s’exécuter efficacement sur un microcontrôleur.
 Contrairement à des architectures plus lourdes comme **VGG** ou **ResNet**, qui comportent plusieurs dizaines de millions de paramètres, **MobileNet** offre une structure optimisée permettant de réduire considérablement la taille du modèle tout en conservant une bonne précision.
 
@@ -95,18 +94,18 @@ Contrairement à des architectures plus lourdes comme **VGG** ou **ResNet**, qui
 
 </p>
 Après l’entraînement du modèle, nous avons évalué ses performances sur le jeu de test CIFAR-10.
-La précision atteinte est affichée, et nous avons généré la matrice de confusion pour visualiser la qualité des prédictions sur chaque classe.
+La précision atteinte est affichée dans la figure suivante, et nous avons généré la matrice de confusion pour visualiser la qualité des prédictions sur chaque classe.
 
 
 <p align="center">
 <img src="https://github.com/user-attachments/assets/3d8d0d9b-b081-4d09-a13a-9d27049548a0"  width="400"/>
 </p>
 
+Après avoir généré les fichiers de test (`xtest`, `ytest`) et le modèle au format `.h5`, nous avons réussi à **déployer le modèle sur la carte STM32 sans difficulté**.  
+L’inférence embarquée a permis d’atteindre une **précision de 85 %** sur le jeu de test.  
+De plus, le modèle n’occupe que **159 Ko de mémoire Flash sur les 2 Mo disponibles**, ce qui illustre clairement la **compacité et l’efficacité** de notre architecture optimisée pour l’embarqué.
 
-Après avoir généré les fichiers de test (`xtest`, `ytest`) et le modèle au format `.h5`, nous avons réussi à **déployer le modèle sur la carte STM32 sans difficulté**.
-L’inférence embarquée a permis d’atteindre une **précision de 85 %** sur le jeu de test.
-
-- **MobileNet ultra-compact** : [Précision ~85 %]  
+- **MobileNet ultra-compact** :
 <p align="center">
   <img src="https://github.com/user-attachments/assets/348594b1-50f2-4c73-a516-d605bbe5fa25" width="500"/>
 
@@ -119,8 +118,10 @@ L’inférence embarquée a permis d’atteindre une **précision de 85 %** sur 
 
 ## Qu’est-ce qu’une attaque Bit-Flip (BFA) ?
 
-L’**attaque Bit-Flip (BFA)** est une technique d’attaque matérielle visant à **altérer les poids d’un réseau de neurones** en modifiant directement certains bits dans la mémoire (généralement DRAM ou Flash).  
-Même une inversion de bit peut provoquer une **dégradation importante des performances**, voire amener le modèle à produire des prédictions totalement erronées.
+L’**attaque Bit-Flip (BFA)** est une technique d’attaque matérielle visant à **altérer les poids d’un réseau de neurones** en modifiant directement certains bits dans la mémoire.  
+Même une inversion de bit peut provoquer une **dégradation importante des performances**, voire amener le modèle à produire des prédictions totalement erronées.  
+L'attaque cible en priorité les **bits de poids les plus significatifs** c'est à dire d’appliquer les bit-flips là où leur impact est maximal afin d’évaluer la robustesse du modèle face aux corruptions les plus dommageables.
+
 
 ---
 
@@ -143,9 +144,10 @@ Après application progressive des bit-flips :
 
 ---
 ## Évaluation sur MobileNet
-
+> Vous trouverez l’ensemble des scripts Python dans la branche `Sécurité` du dépôt.
+> 
 Pour notre modèle **MobileNet** structuré en blocs modulaires :  
-1. L’architecture a été **transcrite dans `mobilenet_quan.py`**.  
+1. L’architecture a été **transcrite dans `quan_mobilenet.py`**.  
 2. L’entraînement a été réalisé selon **quatre configurations** :
 
 | **Configuration** | **Learning rate (lr)** | **Clipping value** | **RandBET** | **Description** |
