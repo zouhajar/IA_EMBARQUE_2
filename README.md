@@ -161,8 +161,8 @@ Après avoir lancé l’entraînement avec `train_mobilenet.py` et effectué la 
 - Pour chaque configuration du modèle, nous avons appliqué l’attaque **Bit‑Flip (BFA)** à l’aide du script `bfa_mobilenet.py`.  
 - L’attaque a été répétée **sur 5 seeds différentes** ['5555', '758', '3666', '4258', '6213'] afin d’évaluer la variabilité due à l’initialisation et obtenir des résultats statistiquement solides.
   
-- À chaque exécution (configuration × seed), un fichier **CSV** a été généré contenant l’évolution de l’accuracy en fonction du nombre de bit‑flips (et autres métriques pertinentes).
-- Une fois toutes les exécutions terminées, les fichiers CSV sont **agrégés et analysés** à l’aide de `printing_tools.py`.  
+- À chaque exécution (configuration × seed), un fichier **CSV** a été généré contenant l’évolution de l’accuracy en fonction du nombre de bit‑flips .
+- Une fois toutes les exécutions terminées, les fichiers CSV sont **agrégés et analysés** à l’aide de `printing_tools_mobilenet.py`.  
   Cela permet de tracer les **courbes accuracy vs nombre de bit‑flips**, afin de comparer la **robustesse** des différentes configurations testées.
 
 <p align="center">
