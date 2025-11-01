@@ -170,8 +170,8 @@ Après avoir lancé l’entraînement avec `train_mobilenet.py` et effectué la 
 </p>
 
 - On observe que **toutes les configurations** voient leur précision diminuer à mesure que le nombre de bit-flips augmente.  
-- Certaines configurations (par exemple la courbe **jaune**) sont **plus robustes** : leur précision décroît plus lentement, ce qui indique une meilleure tolérance aux erreurs ou attaques.  
-- D’autres configurations (par exemple la courbe **bleue**) sont **très sensibles** : leur précision chute rapidement, même avec un faible nombre de bit-flips.
+- Certaines configurations (par exemple la courbe **jaune**, avec protections **Randbet** et **Clipping**) sont **plus robustes** : leur précision décroît plus lentement, ce qui indique une meilleure tolérance aux erreurs ou attaques.  
+- D’autres configurations (par exemple la courbe **bleue**, sans protection) sont **très sensibles** : leur précision chute rapidement, même avec un faible nombre de bit-flips.
   
 ## Conclusion générale
 
