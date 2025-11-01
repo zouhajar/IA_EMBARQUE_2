@@ -161,7 +161,32 @@ Après avoir lancé l’entraînement avec `train_mobilenet.py` et effectué la 
 - L’attaque a été répétée **sur 5 seeds différentes** ['5555', '758', '3666', '4258', '6213'] afin d’évaluer la variabilité due à l’initialisation et obtenir des résultats statistiquement solides.
   
 - À chaque exécution (configuration × seed), un fichier **CSV** a été généré contenant l’évolution de l’accuracy en fonction du nombre de bit‑flips (et autres métriques pertinentes).
+- Une fois toutes les exécutions terminées, les fichiers CSV sont **agrégés et analysés** à l’aide de `printing_tools.py`.  
+  Cela permet de tracer les **courbes accuracy vs nombre de bit‑flips**, afin de comparer la **robustesse** des différentes configurations testées.
 
-- Une fois toutes les exécutions terminées, les CSV sont agrégés et analysés avec `printing_tools.py` afin de tracer les **courbes accuracy vs nombre de bit‑flips** permettant de comparer la robustesse des configurations testées.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2c8b06ac-cc75-40aa-b7fc-b4042c988548" width="640" height="480" alt="accuracy_vs_bfa"/>
+</p>
+
+- On observe que **toutes les configurations** voient leur précision diminuer à mesure que le nombre de bit-flips augmente.  
+- Certaines configurations (par exemple la courbe **jaune**) sont **plus robustes** : leur précision décroît plus lentement, ce qui indique une meilleure tolérance aux erreurs ou attaques.  
+- D’autres configurations (par exemple la courbe **bleue**) sont **très sensibles** : leur précision chute rapidement, même avec un faible nombre de bit-flips.
+  
+## Conclusion générale
+
+Ce projet a démontré la faisabilité et les enjeux concrets de l’**embarquement d’un modèle d’IA sur un microcontrôleur STM32**. À travers la définition, la compression et l’optimisation d’architectures (TinyVGG, MobileNet, ResNet‑like), nous avons exploré le compromis fondamental entre **taille mémoire**, **coût de calcul** et **performance (précision)**.  
+
+Deux approches complémentaires ont été retenues :  
+- la **compression** du modèle existant pour réduire sa taille tout en conservant une précision élevée,  
+- l’adoption d’un **MobileNet ultra‑compact** conçu pour les environnements contraints, qui offre le meilleur compromis taille/performances pour notre carte STM32.  
+
+Sur la partie sécurité, l’étude des attaques **Bit‑Flip (BFA)** a permis d’identifier des méthodes simples et efficaces pour améliorer la robustesse (clipping des poids, RandBET). Les expérimentations montrent que des protections ciblées peuvent ralentir la dégradation de la précision face à des corruptions de poids, mais que la sensibilité dépend fortement de la configuration et de l’architecture du modèle.
+
+## Difficultés rencontrées
+
+- **Contrainte mémoire stricte** : la taille du modèle était souvent le facteur limitant. Certains modèles atteignaient de très bonnes précisions mais dépassaient la capacité Flash/RAM de la carte (ex. ~20 Ko au‑dessus de la limite), rendant l’embarquement impossible sans compression ou ré‑architecture.  
+- **Compromis taille vs précision** : trouver une architecture suffisamment compacte tout en conservant une précision acceptable a demandé plusieurs itérations (quantification, pruning, choix d’architectures légères).  
+- **Ressources de calcul limitées** : l’absence de GPU a considérablement rallongé les temps d’entraînement et de simulation d’attaques. Les phases d’attaque Bit‑Flip et les runs multiples sur différentes seeds ont pris beaucoup de temps CPU, ce qui a ralenti l’itération expérimentale.  
+- **Intégration logicielle** : adapter l’architecture du modèle aux scripts d’entraînement (`train_mobilenet*.py`) et aux scripts d’attaque (`bfa_mobilenet*.py`) a nécessité des modifications répétées .
 
  
